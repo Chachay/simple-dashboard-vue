@@ -11,37 +11,62 @@
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.min.js" integrity="sha256-SU1Ep4Z1qETBgIsTRa5WlmPq9oHzkzR83Fia3jeXHp4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alasql/0.4.11/alasql.min.js" integrity="sha256-cBaIynvJ6UHhaeb8IcYuYtd2hei4XYrPyUhm9DKrRBQ=" crossorigin="anonymous"></script>
     <title>Simple Dashboard</title>
   </head>
   <body>
     <div id="app">
         <nav class="navbar navbar-dark bg-dark text-white">
             <!-- Navbar content -->
-          <h1 class="h4">test</h1>
+          <h1 class="h4">NI225 Dashboard</h1>
         </nav>
         <div class="container-fluid">
           <div class="row">
             <div class="col-md-2">
               <div class="row">
-                <div class="col">aaa</div>
+                <div class="col my-2">
+                    <ul class="list-group">
+                        <li class="list-group-item" v-for="item in categories">
+                          {{ item }}
+                        </li>
+                    </ul>
+                </div>
               </div>
             </div>
             <div class="col-md-10">
               <div class="row">
                 <!-- Plotly -->
                 <div class="col my-5">
-                  <div id="tester" style="height:250px;"></div>
+                  <div id="tester" style="height:500px;"></div>
                 </div>
               </div>
               <div class="row">
                 <div class="col">
-                  <b-table striped hover small :items="items"></b-table>                
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="perPage"
+                    :limit="10"
+                    aria-controls="my-table"
+                  ></b-pagination>
+                  <b-table id="mytable"
+                    striped
+                    hover
+                    small
+                    responsive
+                    :items="items"
+                    :fields="fields"
+                    :per-page="perPage"
+                    :current-page="currentPage"
+                  ></b-table>                
                 </div>
               </div>
             </div>
           </div>
         </div>
     </div>
+    <script src="./dummpy.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
