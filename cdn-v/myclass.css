@@ -1,0 +1,11 @@
+.sidebar{
+  background-color: lightgray;
+}
+.sidebar h2{
+}
+.sidebar a{
+  display: block;
+  text-decoration: none;
+  color: dimgray;
+  padding-left: 1rem;
+}

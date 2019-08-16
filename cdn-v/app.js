@@ -1,5 +1,10 @@
 
+const router = new VueRouter({
+  mode: 'history',
+  routes: []
+});
 const app = new Vue({
+  router,
   el: '#app',
   data: {
     perPage: 25,
@@ -13,22 +18,36 @@ const app = new Vue({
      "CALL_PRICE", "CALL_TPRICE","CALL_VOLATILITY",
     ],
     items: [],
+    t_items:{},
     categories:[],
-    t_items:{}
+    db: [],
+    t_db: {},
   },
   created() {
     let tmp = Papa.parse(this.header.join(",") + "\n" + csv_string,{header:true}).data;
     console.log(tmp[0]);
-    this.items = alasql('SELECT * FROM ? WHERE CODE="NK225E    "', [tmp]);
+    this.db = alasql('SELECT * FROM ? WHERE CODE="NK225E    "', [tmp]);
+    this.t_db = Object.assign(
+      ...Object
+        .keys(this.db[0])
+        .map( key => ({ [key]: this.db.map( o => o[key] ) }))
+      );
+    this.categories = Array.from(new Set(this.t_db["MATURITY"]));
+    console.log("created"+ this.t_db);
+  },
+  mounted: function() {
+    let q = this.$route.query.mat;
+    if (typeof q !== 'undefined') {
+      q = q.toString() + "  ";
+      this.items = alasql('SELECT * FROM ? WHERE MATURITY=?', [this.db, q]);
+    }else{
+      this.items = alasql('SELECT * FROM ? WHERE MATURITY="201909  "', [this.db]);
+    }
     this.t_items = Object.assign(
       ...Object
         .keys(this.items[0])
         .map( key => ({ [key]: this.items.map( o => o[key] ) }))
       );
-    this.categories = Array.from(new Set(this.t_items["MATURITY"]));
-    console.log("created"+ this.t_items)
-  },
-  mounted: function() {
     Plotly.plot( tester, 
       [{
         x: this.t_items['STRIKE'],
