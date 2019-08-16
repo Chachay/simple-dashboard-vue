@@ -22,6 +22,9 @@ const app = new Vue({
     categories:[],
     db: [],
     t_db: {},
+    currentMat: "",
+    currentNI225: 0.0,
+    currentVol: 0.0,
   },
   created() {
     const tmp = Papa.parse(this.header.join(",") + "\n" + csv_string,{header:true}).data
@@ -53,14 +56,19 @@ const app = new Vue({
           .keys(this.items[0])
           .map( key => ({ [key]: this.items.map( o => o[key] ) }))
         );
-      Plotly.plot( tester, 
+      Plotly.newPlot( tester, 
         [{
           x: this.t_items['STRIKE'],
-          y: this.t_items['PUT_TPRICE']
+          y: this.t_items['PUT_TPRICE'],
+          type: 'scatter'
         }],
         {
-          margin: { t: 0 } 
+          margin: { t: 0 } ,
+          title: 'Option Price'
         });
+      this.currentMat = q;
+      this.currentNI225 = Number.parseFloat(this.t_items.F225_PRICE[0])
+      this.currentVol= Number.parseFloat(this.t_items.Base_VOL[0])
     }
   },
   mounted (){

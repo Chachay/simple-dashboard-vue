@@ -38,8 +38,34 @@
             </div>
             <div class="col-md-10">
               <div class="row">
+                <div class="col-xl-3 col-sm-6 py-2">
+                  <div class="card bg-success text-white h-100">
+                    <div class="card-body bg-success">
+                      <h3 class="h6 text-uppercase">Maturity</h6>
+                      <h4 class="h1 display-4">{{currentMat}}</h1>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-4 col-sm-5 py-2">
+                  <div class="card bg-danger text-white h-100">
+                    <div class="card-body bg-danger">
+                      <h3 class="h6 text-uppercase">NI225</h6>
+                      <h4 class="h1 display-4">{{currentNI225}}</h1>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 py-2">
+                  <div class="card bg-info text-white h-100">
+                    <div class="card-body bg-info">
+                      <h3 class="h6 text-uppercase">Base Vol</h6>
+                      <h4 class="h1 display-4">{{currentVol}}</h1>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
                 <!-- Plotly -->
-                <div class="col my-5">
+                <div class="col mt-5">
                   <div id="tester" style="height:500px;"></div>
                 </div>
               </div>
@@ -61,7 +87,11 @@
                     :fields="fields"
                     :per-page="perPage"
                     :current-page="currentPage"
-                  ></b-table>                
+                  >
+                  <template slot="[STRIKE]" slot-scope="data">
+                    {{Number.parseInt(data.value)}}
+                  </template>
+                </b-table>                
                 </div>
               </div>
             </div>
