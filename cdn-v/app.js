@@ -60,7 +60,9 @@ const app = new Vue({
       this.currentVol= Number.parseFloat(this.t_items.Base_VOL[0])
     },
     load_data(data){
-      this.db = data;
+      const tmp = Papa.parse(this.header.join(",") + "\n" + data, {header:true}).data
+            .filter( el => el.CODE === "NK225E    ");
+      this.db = tmp;
       this.t_db = Object.assign(
         ...Object
           .keys(this.db[0])
@@ -69,16 +71,32 @@ const app = new Vue({
       this.categories = Array.from(new Set(this.t_db["MATURITY"]));
     },
     read(input){
-      const reader = new FileReader();
-      const csv = input.target.files[0];
-      reader.onload = (event) => {
-        const tmp = Papa.parse(this.header.join(",") + "\n" + event.target.result, {header:true}).data
-              .filter( el => el.CODE === "NK225E    ");
-        console.log(tmp[0]);
-        this.load_data(tmp);
-        this.update_data();
-      };
-      reader.readAsText(csv);
+      const re = /(?:\.([^.]+))?$/;
+      const ext = re.exec(input.target.files[0].name);
+
+      if(ext[1] === "csv"){
+        const csv = input.target.files[0];
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.load_data(event.target.result);
+          this.update_data();
+        };
+        reader.readAsText(csv);
+      }else if(ext[1] === "zip"){
+        const zip = input.target.files[0];
+        const reader = new JSZip();
+
+        reader.loadAsync(zip)
+          .then((content) => {
+            content.files[Object.keys(content.files)[0]].async('string')
+              .then((data) => {
+                this.load_data(data);
+                this.update_data();
+              }
+            )
+          });
+      }
     }
   },
   mounted (){
