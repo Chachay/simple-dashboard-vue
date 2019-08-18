@@ -26,24 +26,13 @@ const app = new Vue({
     currentNI225: 0.0,
     currentVol: 0.0,
   },
-  created() {
-    const tmp = Papa.parse(this.header.join(",") + "\n" + csv_string,{header:true}).data
-              .filter( el => el.CODE === "NK225E    ");
-    console.log(tmp[0]);
-    this.db = tmp 
-    this.t_db = Object.assign(
-      ...Object
-        .keys(this.db[0])
-        .map( key => ({ [key]: this.db.map( o => o[key] ) }))
-      );
-    this.categories = Array.from(new Set(this.t_db["MATURITY"]));
-    console.log("created"+ this.t_db);
-  },
+  created() {},
   watch: {
     '$route': 'update_data'
   },
   methods: {
     update_data(){
+      if(this.db.length < 1) return;
       let q = this.$route.query.mat;
       if (typeof q !== 'undefined') {
         q = q.toString();
@@ -69,6 +58,27 @@ const app = new Vue({
       this.currentMat = q;
       this.currentNI225 = Number.parseFloat(this.t_items.F225_PRICE[0])
       this.currentVol= Number.parseFloat(this.t_items.Base_VOL[0])
+    },
+    load_data(data){
+      this.db = data;
+      this.t_db = Object.assign(
+        ...Object
+          .keys(this.db[0])
+          .map( key => ({ [key]: this.db.map( o => o[key] ) }))
+        );
+      this.categories = Array.from(new Set(this.t_db["MATURITY"]));
+    },
+    read(input){
+      const reader = new FileReader();
+      const csv = input.target.files[0];
+      reader.onload = (event) => {
+        const tmp = Papa.parse(this.header.join(",") + "\n" + event.target.result, {header:true}).data
+              .filter( el => el.CODE === "NK225E    ");
+        console.log(tmp[0]);
+        this.load_data(tmp);
+        this.update_data();
+      };
+      reader.readAsText(csv);
     }
   },
   mounted (){
